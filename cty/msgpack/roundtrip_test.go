@@ -261,7 +261,7 @@ func TestRoundTrip(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			t.Logf("encoded as %x", b)
+			t.Logf("encoded in %d bytes as %x", len(b), b)
 
 			got, err := Unmarshal(b, test.Type)
 			if err != nil {

@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package zclconf.cty;
+
+option csharp_namespace = "ZCLConf.Protobuf.CTY";
+option cc_enable_arenas = true;
+option go_package = "github.com/zclconf/go-cty/cty/ptypes";
+option java_package = "com.zclconf.protobuf";
+option java_outer_classname = "CTYProto";
+option java_multiple_files = true;
+option objc_class_prefix = "CTY";
+
+message Type {
+    oneof kind {
+        DynamicType dynamic_type = 1;
+        PrimitiveType primitive_type = 2;
+        CollectionType collection_type = 3;
+        ObjectType object_type = 4;
+        TupleType tuple_type = 5;
+    }
+}
+
+enum DynamicType {
+    DYNAMIC_TYPE = 0;
+}
+
+enum PrimitiveType {
+    STRING = 0;
+    NUMBER = 1;
+    BOOL = 2;
+}
+
+message CollectionType {
+    CollectionKind kind = 1;
+    Type element = 2;
+}
+
+enum CollectionKind {
+    LIST = 0;
+    MAP = 1;
+    SET = 2;
+}
+
+message ObjectType {
+    map<string, Type> attributes = 1;
+}
+
+message TupleType {
+    repeated Type types = 1;
+}
+
+message Value {
+    Type type = 1;    
+    oneof kind {
+        UnknownValue unknown_value = 2;
+        NullValue null_value = 3;
+        NumberValue number_value = 4;
+        string string_value = 5;
+        bool bool_value = 6;
+        ListValue list_value = 7;
+        MapValue map_value = 8;
+        SetValue set_value = 9;
+        ObjectValue object_value = 10;
+        TupleValue tuple_value = 11;
+        // TODO: capsule with google.protobuf.Any?
+    }
+}
+
+enum UnknownValue {
+    UNKNOWN_VALUE = 0;
+}
+
+enum NullValue {
+    NULL_VALUE = 0;
+}
+
+message NumberValue {
+    oneof kind {
+        InfinityValue infinity_value = 1;
+        sint64 int_value = 2;
+        double double_value = 3;
+        string string_value = 4;
+    }
+}
+
+enum InfinityValue {
+    POSITIVE_INFINITY = 0;
+    NEGATIVE_INFINITY = 1;
+}
+
+message ListValue {
+    repeated Value values = 2;
+}
+
+message MapValue {
+    map<string, Value> values = 2;
+}
+
+message SetValue {
+    repeated Value values = 2;
+}
+
+message ObjectValue {
+    map<string, Value> values = 1;
+}
+
+message TupleValue {
+    repeated Value values = 2;
+}

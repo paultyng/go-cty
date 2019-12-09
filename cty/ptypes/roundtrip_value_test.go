@@ -1,13 +1,15 @@
-package msgpack
+package ptypes
 
 import (
 	"fmt"
 	"testing"
 
 	"github.com/zclconf/go-cty/cty"
+
+	"github.com/golang/protobuf/proto"
 )
 
-func TestRoundTrip(t *testing.T) {
+func TestRoundTripValue(t *testing.T) {
 	bigNumberVal, err := cty.ParseNumberVal("9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999")
 	if err != nil {
 		t.Fatal(err)
@@ -256,14 +258,25 @@ func TestRoundTrip(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%#v as %#v", test.Value, test.Type), func(t *testing.T) {
-			b, err := Marshal(test.Value, test.Type)
+			expected, err := MarshalValue(test.Value, test.Type)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			b, err := proto.Marshal(expected)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			t.Logf("encoded in %d bytes as %x", len(b), b)
 
-			got, err := Unmarshal(b, test.Type)
+			var actual Value
+			err = proto.Unmarshal(b, &actual)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			got, err := UnmarshalValue(&actual, test.Type)
 			if err != nil {
 				t.Fatal(err)
 			}
